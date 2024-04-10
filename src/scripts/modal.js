@@ -22,17 +22,14 @@ function handleEscClose(event) {
 }
 
 // Обработчик закрытия модального окна по клику на крестик или оверлей
-function setupCloseEventListeners() {
-  document.addEventListener("click", function (event) {
-    const isCloseButton = event.target.classList.contains("popup__close");
-    const isOverlay = event.target.classList.contains("popup");
-    const openModal = document.querySelector(".popup_is-opened");
+function setupCloseEventListeners(event) {
+  const isCloseButton = event.target.classList.contains("popup__close");
+  const isOverlay = event.target.classList.contains("popup");
+  const openModal = document.querySelector(".popup_is-opened");
 
-    if ((isCloseButton || isOverlay) && openModal) {
-      closeModal(openModal);
-    }
-  });
+  if ((isCloseButton || isOverlay) && openModal) {
+    closeModal(openModal);
+  }
 }
-setupCloseEventListeners();
 
 export { openModal, closeModal, handleEscClose, setupCloseEventListeners };
