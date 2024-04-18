@@ -9,9 +9,6 @@ function closeModal(modal) {
   document.removeEventListener("keydown", handleEscClose);
 }
 
-// закрытие по ESC
-document.addEventListener("keydown", handleEscClose);
-
 function handleEscClose(event) {
   if (event.key === "Escape" || event.key === 27) {
     const openModal = document.querySelector(".popup_is-opened");
@@ -32,4 +29,4 @@ function setupCloseEventListeners(event) {
   }
 }
 
-export { openModal, closeModal, handleEscClose, setupCloseEventListeners };
+export { openModal, closeModal, setupCloseEventListeners };
