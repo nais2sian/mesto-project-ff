@@ -20,3 +20,21 @@
     line-height: 15px;
   }
 }
+
+.popup__input_type_error{
+  border-color: #FF0000;
+}
+
+.popup__input-error-message {
+  color: #FF0000;
+  font-size: 12px;
+  min-height: 12px;
+  padding-top: 5px;
+  transition: 0.3s;
+  opacity: 0; 
+  display: block; 
+}
+
+.popup__error_visible {
+  opacity: 1; 
+}

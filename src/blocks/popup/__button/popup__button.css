@@ -19,9 +19,19 @@
   cursor: pointer;
 }
 
+.hide-loader{
+  display:none;
+  }
+
 @media screen and (max-width: 568px) {
   .popup__button {
     font-size: 14px;
     line-height: 17px;
   }
+}
+
+.popup__button_disabled {
+  background-color: transparent;
+  color: #C4C4C4;
+  border: 1px solid #C4C4C4;
 }

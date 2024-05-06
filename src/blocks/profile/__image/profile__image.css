@@ -1,3 +1,28 @@
+.overlay,
+.pencil {
+  display: none;
+}
+
+.profile__image:hover .overlay,
+.profile__image:hover .pencil {
+  display: flex;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  margin: 0 29px 0 0;
+  display: flex;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  align-items: center;
+  justify-content: center;
+}
+
 .profile__image {
   width: 120px;
   height: 120px;
@@ -6,14 +31,45 @@
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  margin: 0 29px 0 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media screen and (max-width: 740px) {
+.pencil {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  background-size: cover;
+  background-position: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.overlay {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.profile__image:hover .overlay .pencil {
+  display: flex;
+}
+
+/* @media screen and (max-width: 740px) {
   .profile__image {
     margin: 0 10px 0 0;
   }
-}
+} */
 
 @media screen and (max-width: 480px) {
   .profile__image {
