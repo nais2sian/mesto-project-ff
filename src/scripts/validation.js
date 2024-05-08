@@ -1,25 +1,25 @@
-const objElements = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
-};
-
 const enableValidation = (config, formElement) => {
   const inputElements = formElement.querySelectorAll(config.inputSelector);
   inputElements.forEach(function (input) {
     input.addEventListener("input", function () {
-      if (input.id !== "url") {
-        isValid(input);
-      }
+      isValid(input);
     });
   });
   formElement.addEventListener("submit", function (evt) {
     evt.preventDefault();
   });
 };
+
+function clearValidation(profileForm, config) {
+  const inputElements = profileForm.querySelectorAll(config.inputSelector);
+  inputElements.forEach((element) => {
+    element.classList.remove(config.inputErrorClass);
+    element.setCustomValidity("");
+    const errorElement = element.nextElementSibling;
+    errorElement.classList.remove("popup__error_visible");
+    errorElement.textContent = "";
+  });
+}
 
 function isValid(inputElement) {
   const errorElement = inputElement.nextElementSibling;
@@ -32,7 +32,15 @@ function isValid(inputElement) {
     inputElement.classList.remove("popup__input_type_error");
     errorElement.classList.remove("popup__error_visible");
     errorElement.textContent = "";
-    inputElement.setCustomValidity("");
+  }
+  if (!inputElement.validity.valid) {
+    inputElement.classList.add("popup__input_type_error");
+    errorElement.classList.add("popup__error_visible");
+    errorElement.textContent = inputElement.validationMessage;
+  } else {
+    inputElement.classList.remove("popup__input_type_error");
+    errorElement.classList.remove("popup__error_visible");
+    errorElement.textContent = "";
   }
 }
 
@@ -71,23 +79,4 @@ function toggleButtonState(inputElements, buttonElement) {
   }
 }
 
-function clearValidation(profileForm, config) {
-  const inputElements = profileForm.querySelectorAll(config.inputSelector);
-  inputElements.forEach((element) => {
-    element.classList.remove(config.inputErrorClass);
-    element.setCustomValidity("");
-    const errorElement = element.nextElementSibling;
-    errorElement.classList.remove("popup__error_visible");
-    errorElement.textContent = "";
-  });
-}
-
-export {
-  objElements,
-  enableValidation,
-  isValid,
-  enableToggle,
-  hasInvalidInput,
-  toggleButtonState,
-  clearValidation,
-};
+export { enableValidation, clearValidation, isValid, enableToggle };

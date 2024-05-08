@@ -8,17 +8,23 @@ import {
   updateProfile,
   postCard,
   deleteServerCard,
-  setLike,
-  deleteLike,
   newAvatar,
 } from "./api.js";
 
 import {
-  objElements,
   enableValidation,
-  enableToggle,
   clearValidation,
+  enableToggle,
 } from "./validation.js";
+
+const objElements = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 const content = document.querySelector(".content");
 const popups = document.querySelectorAll(".popup");
@@ -73,6 +79,7 @@ function allFetch() {
   Promise.all([getUserData(), getCardsData()])
     .then(([userData, cards]) => {
       createCards(cards, userData._id);
+      createProfile(userData);
     })
     .catch((error) => {
       console.error("Error processing data: ", error);
@@ -82,13 +89,7 @@ allFetch();
 
 function createCards(array, userId) {
   array.forEach(function (elements) {
-    const card = createCard(
-      elements,
-      deleteCard,
-      likeReaction,
-      openImgWindow,
-      userId
-    );
+    const card = createCard(elements, deleteCard, openImgWindow, userId);
     placesList.append(card);
   });
 }
@@ -102,23 +103,12 @@ popups.forEach(function (element) {
 
 /// ОТКРЫТИЕ ФОРМЫ ДОБАВЛЕНИЯ КАРТОЧЕК
 profileAddBtn.addEventListener("click", function () {
+  popupButton.textContent = "Сохранить";
   openModal(popupNewCard);
   popupButton.classList.add("popup__button_disabled");
   newCardForm.reset();
-  popupButton.textContent = "Сохранить";
   clearValidation(newCardForm, objElements);
 });
-
-/// ПОЛУЧЕНИЕ ДАННЫХ ДЛЯ ПРОФИЛЯ
-getUserData()
-  .then((data) => {
-    if (data) {
-      createProfile(data);
-    }
-  })
-  .catch((error) => {
-    console.error("Error handling data: ", error);
-  });
 
 /// ОТОБРАЖЕНИЕ ДАННЫХ ПРОФИЛЯ
 function createProfile(data) {
@@ -145,71 +135,80 @@ function openImgWindow(input) {
   popupImgCaption.textContent = input.name;
 }
 
+/// ОТКРЫТИЕ РЕДАКТИРОВАНИЕ АВАТАРА
+avatarImg.addEventListener("click", function () {
+  openModal(popupAvatar);
+  avatarButton.textContent = "Сохранить";
+  avatarButton.classList.add("popup__button_disabled");
+  avatarForm.reset();
+});
+
 /// РЕДАКТИРОВАНИЕ ПРОФИЛЯ
 profileForm.addEventListener("submit", handleFormSubmit);
 function handleFormSubmit(evt) {
   evt.preventDefault();
+  profileBtn.textContent = "Сохранение...";
   const name = nameInput.value;
   const job = jobInput.value;
-  updateProfile(name, job);
-  profileBtn.textContent = "Сохранение...";
-  nameContent.textContent = name;
-  jobContent.textContent = job;
-  closeModal(popupProfile);
+  updateProfile(name, job)
+    .then((data) => {
+      console.log("Profile updated:", data);
+      nameContent.textContent = name;
+      jobContent.textContent = job;
+      closeModal(popupProfile);
+    })
+    .catch((error) => {
+      console.error("Failed to update profile:", error);
+    })
+    .finally(() => {
+      profileBtn.textContent = "Сохранить";
+    });
 }
 
 /// ДОБАВЛЕНИЕ НОВОЙ КАРТОЧКИ
 popupNewCard.addEventListener("submit", formSubmit);
 function formSubmit(evt) {
   evt.preventDefault();
+  popupButton.textContent = "Сохранение...";
   const place = placeInput.value;
   const link = linkInput.value;
   postCard(place, link)
     .then((data) => {
       console.log("Profile updated:", data);
       const userId = data.owner._id;
-      const newCard = createCard(
-        data,
-        deleteCard,
-        likeReaction,
-        openImgWindow,
-        userId
-      );
+      const newCard = createCard(data, deleteCard, openImgWindow, userId);
       placesList.prepend(newCard);
+      closeModal(popupNewCard);
+      newCardForm.reset();
     })
     .catch((error) => {
       console.error("Failed to update profile:", error);
+    })
+    .finally(() => {
+      popupButton.textContent = "Сохранить";
     });
-  popupButton.textContent = "Сохранение...";
-  newCardForm.reset();
-  closeModal(popupNewCard);
 }
-
-/// ОТКРЫТЬ РЕДАКТИРОВАНИЕ АВАТАРА
-avatarImg.addEventListener("click", function () {
-  openModal(popupAvatar);
-  avatarButton.classList.add("popup__button_disabled");
-  avatarForm.reset();
-  avatarButton.textContent = "Сохранить";
-});
 
 /// РЕДАКТИРОВАНИЕ АВАТАРА ПОЛЬЗОВАТЕЛЯ
 popupAvatar.addEventListener("submit", avatarSubmit);
 function avatarSubmit(evt) {
   evt.preventDefault();
+  avatarButton.textContent = "Сохранение...";
   const link = inputAvatar.value;
   newAvatar(link)
     .then((data) => {
       console.log("Profile updated:", data);
       const link = data.avatar;
       avatarImg.style.backgroundImage = `url('${link}')`;
+      closeModal(popupAvatar);
+      avatarForm.reset();
     })
     .catch((error) => {
       console.error("Failed to update profile:", error);
+    })
+    .finally(() => {
+      avatarButton.textContent = "Сохранить";
     });
-  avatarButton.textContent = "Сохранение...";
-  closeModal(popupAvatar);
-  avatarForm.reset();
 }
 
 /// ОБЕСПЕЧЕНИЕ ВАЛИДАЦИИ
@@ -221,32 +220,11 @@ forms.forEach(function (formElement) {
 /// ОБЕСПЕЧЕНИЕ ПЕРЕКЛЮЧЕНИЯ СОСТОЯНИЯ КНОПОК
 enableToggle(objElements);
 function deleteCard(input, cardId) {
-  input.remove();
-  deleteServerCard(cardId);
-}
-
-function likeReaction(btn, cardElements, likeBox) {
-  btn.classList.toggle("card__like-button_is-active");
-  const cardId = cardElements._id;
-  if (btn.classList.contains("card__like-button_is-active")) {
-    likeBox.textContent = parseInt(likeBox.textContent) + 1;
-    setLike(cardId)
-      .then((data) => {
-        console.log("setLike data:", data);
-      })
-      .catch((error) => {
-        console.error("Failed to update like:", error);
-        throw error;
-      });
-  } else {
-    const likeNumber = cardElements.likes.length - 1;
-    deleteLike(cardId)
-      .then((data) => {
-        console.log("Profile updated:", data);
-        likeBox.textContent = data.likes.length;
-      })
-      .catch((error) => {
-        console.error("Failed to update profile:", error);
-      });
-  }
+  deleteServerCard(cardId)
+    .then(() => {
+      input.remove();
+    })
+    .catch((error) => {
+      console.error("Failed to remove card:", error);
+    });
 }
