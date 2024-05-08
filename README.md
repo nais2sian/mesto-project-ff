@@ -25,4 +25,10 @@ This is a personal project named 'Mesto'. It is a web application where users ca
 To run this project locally:
 1. Clone the repository.
 2. Install dependencies using npm install.
+<<<<<<< HEAD
 3. Start the server with npm start.
+=======
+3. Start the server with npm start.
+
+
+>>>>>>> da6e837ed0533e7d16efdb0dddcbf9ae05d4623e
