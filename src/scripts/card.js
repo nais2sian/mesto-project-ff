@@ -34,9 +34,9 @@ function createCard(cardElements, deleteFunc, openImg, userId) {
         });
     } else {
       setLike(cardElements._id)
-        .then(() => {
+        .then((data) => {
           likeButton.classList.add("card__like-button_is-active");
-          likesBox.textContent = parseInt(likesBox.textContent) + 1;
+          likesBox.textContent = data.likes.length;
         })
         .catch((error) => {
           console.error("Failed to update like:", error);

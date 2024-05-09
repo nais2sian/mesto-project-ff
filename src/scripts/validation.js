@@ -25,12 +25,12 @@ function isValid(inputElement) {
   const errorElement = inputElement.nextElementSibling;
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-    errorElement.textContent = inputElement.validationMessage;
     inputElement.classList.add("popup__input_type_error");
     errorElement.classList.add("popup__error_visible");
   } else {
     inputElement.classList.remove("popup__input_type_error");
     errorElement.classList.remove("popup__error_visible");
+    inputElement.setCustomValidity("");
     errorElement.textContent = "";
   }
   if (!inputElement.validity.valid) {
@@ -69,12 +69,9 @@ function hasInvalidInput(input) {
 }
 
 function toggleButtonState(inputElements, buttonElement) {
-  console.log(inputElements);
   if (hasInvalidInput(inputElements) === true) {
-    console.log("не валидно");
     buttonElement.classList.add("popup__button_disabled");
   } else {
-    console.log("валидно");
     buttonElement.classList.remove("popup__button_disabled");
   }
 }
